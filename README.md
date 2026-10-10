@@ -1,5 +1,7 @@
 # AgentC (preview)
 
+English | [简体中文](README.zh-CN.md)
+
 AgentC is a cross-platform agent plugin compiler. This repository is a **preview**
 of the portable agent-project CLI (`agentc`). It is **not** a 1.0 product release.
 
@@ -141,7 +143,7 @@ agentc package ./my-agent
 agentc audit --for-public ./my-agent
 ```
 
-`init` writes an example GitHub Actions workflow at `.github/workflows/ci.yml` (`validate` then `build`, Ubuntu / Windows / macOS, Python 3.10). Install `agentc` yourself first. There is no public install source yet, so that workflow will not go green on public GitHub by default. This repository's own `.github/` is unchanged.
+`init` writes an example GitHub Actions workflow at `.github/workflows/ci.yml` (`validate` then `build`, Ubuntu / Windows / macOS, Python 3.10). That generated workflow must install `agentc` before invoking it; for now, install from a checkout or wheel built from this repository. This repository has a separate CI workflow for its own source tree.
 
 ## Advanced migration
 
