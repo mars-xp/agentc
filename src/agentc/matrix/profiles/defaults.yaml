@@ -1,0 +1,5 @@
+schemaVersion: agentc-host-profile/v1
+defaults:
+  cursor: cursor/2026.09
+  codex: codex/2026.09
+  claude-code: claude-code/2026.09

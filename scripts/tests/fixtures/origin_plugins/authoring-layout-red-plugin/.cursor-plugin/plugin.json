@@ -1,0 +1,9 @@
+{
+  "name": "authoring-layout-red-plugin",
+  "version": "0.0.1",
+  "description": "Fixture: skill body contains a layout needle for repair tests",
+  "author": {
+    "name": "fixture"
+  },
+  "skills": "./skills/"
+}

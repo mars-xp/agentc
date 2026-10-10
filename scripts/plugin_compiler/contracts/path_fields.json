@@ -1,0 +1,24 @@
+{
+  "fields": [
+    {
+      "host": "cursor",
+      "path": "resources",
+      "value_kind": "path-array"
+    },
+    {
+      "host": "claude-code",
+      "path": "resources",
+      "value_kind": "path-array"
+    },
+    {
+      "host": "codex",
+      "path": "resources",
+      "value_kind": "path-array"
+    },
+    {
+      "host": "codex",
+      "path": "interface.screenshots",
+      "value_kind": "path-array"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+schemaVersion: agent-project/v1
+project:
+  id: host-skills
+  name: Host Skills
+  version: 0.1.0
+  license: Apache-2.0
+targets:
+  cursor:
+    enabled: true
+  codex:
+    enabled: true
+  claude-code:
+    enabled: true
+contents:
+  skills:
+    - skills/create
+    - skills/migrate
+    - skills/build
+    - skills/publish-prep
+  rules: []
+  commands: []
+  agents: []
+  hooks: []
+  mcp: []
+defaults:
+  scopes:
+    - workspace
+  conflictPolicy: fail
+  portabilityPolicy: compatible
+requirements:
+  executables: []
+  environment:
+    optional: []
+security:
+  forbidAbsolutePaths: true

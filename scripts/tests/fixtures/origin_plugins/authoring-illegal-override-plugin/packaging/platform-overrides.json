@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "default_targets": ["cursor", "codex", "claude-code"],
+  "overrides": {
+    "skill:skills/demo-clean": {
+      "targets": ["cursor", "claude-code"],
+      "reason": "Codex-visible files still contain Cursor layout strings (.cursor-plugin / .cursor/skills / ~/.cursor/plugins / JXP_CURSOR_PLUGIN_ROOT)"
+    }
+  }
+}

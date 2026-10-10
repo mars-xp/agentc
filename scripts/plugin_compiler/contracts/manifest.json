@@ -1,0 +1,14 @@
+{
+  "captured_at": "2026-09-04",
+  "sources": [
+    "https://prod.cursor.com/docs/reference/plugins",
+    "https://prod.cursor.com/docs/hooks",
+    "https://code.claude.com/docs/en/plugins-reference",
+    "https://code.claude.com/docs/en/hooks",
+    "https://code.claude.com/docs/en/skills",
+    "https://developers.openai.com/codex/hooks",
+    "${CODEX_VALIDATOR}"
+  ],
+  "codex_validator_path": "${CODEX_VALIDATOR}",
+  "codex_validator_sha256": "6ff4bc1cc8ca94827c30c8299951efdac900ff38a5069c03e9a6554fc194a723"
+}

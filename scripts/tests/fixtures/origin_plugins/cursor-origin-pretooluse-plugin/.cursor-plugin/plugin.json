@@ -1,0 +1,8 @@
+{
+  "name": "cursor-origin-pretooluse-plugin",
+  "version": "0.0.1",
+  "description": "cursor origin with decision preToolUse hook",
+  "author": {
+    "name": "fixture"
+  }
+}

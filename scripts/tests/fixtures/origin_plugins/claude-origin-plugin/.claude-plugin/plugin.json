@@ -1,0 +1,11 @@
+{
+  "name": "claude-origin-plugin",
+  "version": "0.0.1",
+  "description": "native claude source",
+  "author": {
+    "name": "fixture"
+  },
+  "displayName": "Claude Origin",
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

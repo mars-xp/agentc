@@ -1,0 +1,14 @@
+id: codex/2026.09
+host: codex
+hostVersions: "declared-snapshot"
+lastVerified: "2026.09"
+limits:
+  - "Snapshot shipped with this internal CLI; not probed from the local host binary."
+  - "On Codex, rule, command, and agent are partial. AgentC still emits them, but the host plugin.json schema requires author or interface and may reject the result. partial is not supported."
+capabilities:
+  skill: supported
+  rule: partial
+  command: partial
+  agent: partial
+  hook: unsupported
+  mcp: unsupported

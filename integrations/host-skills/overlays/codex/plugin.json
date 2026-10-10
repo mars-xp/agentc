@@ -1,0 +1,32 @@
+[
+  {
+    "op": "set",
+    "field": "name",
+    "value": "host-skills"
+  },
+  {
+    "op": "set",
+    "field": "author",
+    "value": {
+      "name": "AgentC"
+    }
+  },
+  {
+    "op": "set",
+    "field": "description",
+    "value": "Shared host skills that wrap the agentc CLI with --format protocol."
+  },
+  {
+    "op": "set",
+    "field": "interface",
+    "value": {
+      "displayName": "Host Skills",
+      "shortDescription": "Create, migrate, build, and package agent-project sources.",
+      "longDescription": "Four skills that call agentc with --format protocol as the machine source of truth.",
+      "developerName": "AgentC",
+      "category": "Developer Tools",
+      "capabilities": ["Read", "Write"],
+      "defaultPrompt": ["Use agentc with --format protocol."]
+    }
+  }
+]

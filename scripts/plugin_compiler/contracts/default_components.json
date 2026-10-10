@@ -1,0 +1,29 @@
+{
+  "claude-code": [
+    ["commands", "command"],
+    ["agents", "agent"],
+    ["hooks/hooks.json", "hook"],
+    [".mcp.json", "mcp"],
+    [".lsp.json", "lsp"],
+    ["output-styles", "output-style"],
+    ["themes", "theme"],
+    ["monitors/monitors.json", "monitor"],
+    ["bin", "command"],
+    ["settings.json", "plugin-metadata"],
+    ["SKILL.md", "skill"],
+    ["package.json", "plugin-metadata"],
+    ["package-lock.json", "plugin-metadata"],
+    ["bun.lockb", "plugin-metadata"]
+  ],
+  "cursor": [
+    ["skills", "skill"],
+    ["SKILL.md", "skill"],
+    ["hooks/hooks.json", "hook"],
+    ["mcp.json", "mcp"]
+  ],
+  "codex": [
+    ["hooks.json", "hook"],
+    ["hooks/hooks.json", "hook"],
+    [".mcp.json", "mcp"]
+  ]
+}

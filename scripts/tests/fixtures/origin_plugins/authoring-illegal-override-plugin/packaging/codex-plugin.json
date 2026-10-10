@@ -1,0 +1,12 @@
+{
+  "description": "Illegal override fixture for example-plugin-skill repair tests",
+  "interface": {
+    "displayName": "Authoring Illegal Override",
+    "shortDescription": "Fixture with layout escape override",
+    "longDescription": "Override uses layout strings as missing-host reason; skill source is clean.",
+    "developerName": "fixture",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": ["Repair illegal override fixture."]
+  }
+}

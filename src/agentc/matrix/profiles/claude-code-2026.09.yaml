@@ -1,0 +1,15 @@
+id: claude-code/2026.09
+host: claude-code
+hostVersions: "declared-snapshot"
+lastVerified: "2026.09"
+limits:
+  - "Snapshot shipped with this internal CLI; not probed from the local host binary."
+  - "Claude Code agent is partial. AgentC still emits agents, and the host validator may reject them (agents: Invalid input) as AGC-P2-0003. partial is not supported."
+  - "Claude Code rule is partial. The shipped RULE.md template uses alwaysApply false with no globs, so a default rule can fail with AGC-P2-0003 until the rule sets alwaysApply true or adds globs."
+capabilities:
+  skill: supported
+  rule: partial
+  command: supported
+  agent: partial
+  hook: unsupported
+  mcp: unsupported

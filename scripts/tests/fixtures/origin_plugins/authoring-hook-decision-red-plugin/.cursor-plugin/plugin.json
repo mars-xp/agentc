@@ -1,0 +1,9 @@
+{
+  "name": "authoring-hook-decision-red-plugin",
+  "version": "0.0.1",
+  "description": "Fixture: preToolUse decision hook blocks Codex without stdio_adapter",
+  "author": {
+    "name": "fixture"
+  },
+  "skills": "./skills/"
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Claude origin compiled for Codex",
+  "interface": {
+    "displayName": "Claude Origin",
+    "shortDescription": "native claude source",
+    "longDescription": "Native Claude Code origin fixture compiled to Codex.",
+    "developerName": "fixture",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": ["Hello from Claude origin."]
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "schema_version": 1,
+  "default_targets": ["cursor", "codex", "claude-code"]
+}

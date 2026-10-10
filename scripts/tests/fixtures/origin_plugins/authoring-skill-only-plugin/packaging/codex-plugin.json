@@ -1,0 +1,12 @@
+{
+  "description": "Minimal fixture compiled for Codex",
+  "interface": {
+    "displayName": "Authoring Skill Only",
+    "shortDescription": "example-plugin-skill three-host fixture",
+    "longDescription": "Minimal plugin fixture containing only example-plugin-skill for validate-only acceptance.",
+    "developerName": "fixture",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": ["Create or repair a plugin skill."]
+  }
+}

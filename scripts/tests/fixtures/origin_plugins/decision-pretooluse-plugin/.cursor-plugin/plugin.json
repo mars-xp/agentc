@@ -1,0 +1,8 @@
+{
+  "name": "decision-pretooluse-plugin",
+  "version": "0.0.1",
+  "description": "Cursor origin with decision preToolUse hook and matcher (Codex anti-fixture)",
+  "author": {
+    "name": "fixture"
+  }
+}

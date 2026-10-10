@@ -1,0 +1,12 @@
+{
+  "description": "Hook decision fixture for example-plugin-skill repair tests",
+  "interface": {
+    "displayName": "Authoring Hook Decision Red",
+    "shortDescription": "Fixture with preToolUse decision hook",
+    "longDescription": "preToolUse hook blocks Codex without stdio_adapter.",
+    "developerName": "fixture",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": ["Repair hook decision fixture."]
+  }
+}

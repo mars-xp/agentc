@@ -1,0 +1,104 @@
+{
+  "handler_types": {
+    "command": {
+      "fields": ["command", "args", "timeout"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    "prompt": {
+      "fields": ["prompt"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    "http": {
+      "fields": ["url", "method", "headers"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    "mcp_tool": {
+      "fields": ["tool", "server"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    "agent": {
+      "fields": ["agent"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    }
+  },
+  "hosts": {
+    "cursor": {
+      "group_fields": [],
+      "handler_types": ["command", "prompt"],
+      "shape": "flat",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    "claude-code": {
+      "group_fields": ["matcher", "timeout"],
+      "handler_types": ["command", "http", "mcp_tool", "prompt", "agent"],
+      "shape": "nested",
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    "codex": {
+      "group_fields": ["matcher"],
+      "handler_types": ["command"],
+      "shape": "nested",
+      "source": "https://developers.openai.com/codex/hooks"
+    }
+  },
+  "cross_host": [
+    {
+      "handler_type": "command",
+      "action": "rewrite-plugin-root",
+      "source": "https://code.claude.com/docs/en/plugins-reference"
+    },
+    {
+      "handler_type": "prompt",
+      "action": "passthrough-fields",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "handler_type": "prompt",
+      "to_host": "codex",
+      "action": "block",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "handler_type": "http",
+      "from_host": "claude-code",
+      "to_host": "cursor",
+      "action": "block",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "handler_type": "http",
+      "from_host": "claude-code",
+      "to_host": "codex",
+      "action": "block",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "handler_type": "mcp_tool",
+      "from_host": "claude-code",
+      "to_host": "cursor",
+      "action": "block",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "handler_type": "mcp_tool",
+      "from_host": "claude-code",
+      "to_host": "codex",
+      "action": "block",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "handler_type": "agent",
+      "from_host": "claude-code",
+      "to_host": "cursor",
+      "action": "block",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "handler_type": "agent",
+      "from_host": "claude-code",
+      "to_host": "codex",
+      "action": "block",
+      "source": "https://developers.openai.com/codex/hooks"
+    }
+  ]
+}

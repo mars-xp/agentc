@@ -1,0 +1,9 @@
+{
+  "name": "authoring-illegal-override-plugin",
+  "version": "0.0.1",
+  "description": "Fixture: illegal layout-string override reason with clean skill source",
+  "author": {
+    "name": "fixture"
+  },
+  "skills": "./skills/"
+}

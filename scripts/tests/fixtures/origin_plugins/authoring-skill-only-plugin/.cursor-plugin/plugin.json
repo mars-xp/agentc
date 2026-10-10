@@ -1,0 +1,9 @@
+{
+  "name": "authoring-skill-only-plugin",
+  "version": "0.0.1",
+  "description": "Minimal fixture: only example-plugin-skill for three-host validate-only",
+  "author": {
+    "name": "fixture"
+  },
+  "skills": "./skills/"
+}

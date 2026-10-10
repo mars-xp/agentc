@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentc"
+version = "0.1.0a0"
+description = "Preview CLI for portable agent projects. Not a 1.0 release."
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["PyYAML"]
+
+[project.scripts]
+agentc = "agentc.cli.main:main"
+
+[tool.setuptools]
+py-modules = ["plugin_packaging"]
+
+[tool.setuptools.packages.find]
+where = ["src", "scripts"]
+include = ["agentc*", "plugin_compiler*", "plugin_targets*"]
+
+[tool.setuptools.package-data]
+"agentc.templates" = ["skill/SKILL.md", "rule/RULE.md", "command/COMMAND.md", "agent/AGENT.md"]
+"agentc.matrix" = ["profiles/*"]
+"agentc.audit" = ["public-scan-rules.yaml"]
+"agentc.project" = ["templates/*"]
+"plugin_compiler.contracts" = ["*.json"]

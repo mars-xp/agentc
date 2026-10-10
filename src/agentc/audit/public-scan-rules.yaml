@@ -1,0 +1,11 @@
+schemaVersion: agentc-scan-rules/v1
+internal_domain_suffixes: []
+internal_hosts: []
+public_package_index_hosts:
+  - pypi.org
+  - files.pythonhosted.org
+  - pypi.python.org
+example_domains:
+  - example.invalid
+  - example.com
+  - example.org

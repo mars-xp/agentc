@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "codex-origin": {
+      "command": "python3",
+      "args": ["${PLUGIN_ROOT}/scripts/server.py"]
+    }
+  }
+}

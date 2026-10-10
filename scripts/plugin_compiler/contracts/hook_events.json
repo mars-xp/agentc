@@ -1,0 +1,395 @@
+{
+  "compiled_rule_events": ["SessionStart", "UserPromptSubmit", "PreToolUse"],
+  "rows": [
+    {
+      "from_host": "cursor",
+      "from_event": "beforeSubmitPrompt",
+      "to_host": "claude-code",
+      "to_events": ["UserPromptSubmit"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "stop",
+      "to_host": "claude-code",
+      "to_events": ["Stop"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterAgentResponse",
+      "to_host": "claude-code",
+      "to_events": ["Stop"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "stop",
+      "to_host": "codex",
+      "to_events": ["Stop"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterAgentResponse",
+      "to_host": "codex",
+      "to_events": ["Stop"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeMCPExecution",
+      "to_host": "claude-code",
+      "to_events": ["Notification", "PermissionRequest"],
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeMCPExecution",
+      "to_host": "codex",
+      "to_events": ["PermissionRequest"],
+      "event-not-equivalent": true,
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "preToolUse",
+      "to_host": "claude-code",
+      "to_events": ["PreToolUse"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "claude-code:{hookSpecificOutput.hookEventName,hookSpecificOutput.permissionDecision,updatedInput}",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "postToolUse",
+      "to_host": "claude-code",
+      "to_events": ["PostToolUse"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "sessionStart",
+      "to_host": "claude-code",
+      "to_events": ["SessionStart"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "sessionStart",
+      "to_host": "codex",
+      "to_events": ["SessionStart"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "sessionEnd",
+      "to_host": "codex",
+      "to_events": ["SessionEnd"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "preToolUse",
+      "to_host": "codex",
+      "to_events": ["PreToolUse"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "cursor:{permission,updated_input} codex:{hookSpecificOutput.permissionDecision,updatedInput}",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "postToolUse",
+      "to_host": "codex",
+      "to_events": ["PostToolUse"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "preCompact",
+      "to_host": "codex",
+      "to_events": ["PreCompact"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "subagentStart",
+      "to_host": "codex",
+      "to_events": ["SubagentStart"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "subagentStop",
+      "to_host": "codex",
+      "to_events": ["SubagentStop"],
+      "from_shape": "flat",
+      "to_shape": "nested",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "SessionStart",
+      "to_host": "cursor",
+      "to_events": ["sessionStart"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "SessionEnd",
+      "to_host": "cursor",
+      "to_events": ["sessionEnd"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "PreToolUse",
+      "to_host": "cursor",
+      "to_events": ["preToolUse"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "cursor:{permission,updated_input} codex:{hookSpecificOutput.permissionDecision,updatedInput}",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "PostToolUse",
+      "to_host": "cursor",
+      "to_events": ["postToolUse"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "PreCompact",
+      "to_host": "cursor",
+      "to_events": ["preCompact"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "SubagentStart",
+      "to_host": "cursor",
+      "to_events": ["subagentStart"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "SubagentStop",
+      "to_host": "cursor",
+      "to_events": ["subagentStop"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "Stop",
+      "to_host": "cursor",
+      "to_events": ["stop"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "handler-level",
+      "stdin_example": "json-on-stdin",
+      "stdout_example": "",
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "claude-code",
+      "from_event": "UserPromptSubmit",
+      "to_host": "cursor",
+      "to_events": ["beforeSubmitPrompt"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "claude-code",
+      "from_event": "PreToolUse",
+      "to_host": "cursor",
+      "to_events": ["preToolUse"],
+      "from_shape": "nested",
+      "to_shape": "flat",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "cursor:{permission,updated_input}",
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    {
+      "from_host": "claude-code",
+      "from_event": "PreToolUse",
+      "to_host": "codex",
+      "to_events": ["PreToolUse"],
+      "from_shape": "nested",
+      "to_shape": "nested",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "codex:{hookSpecificOutput.permissionDecision,updatedInput}",
+      "source": "https://code.claude.com/docs/en/hooks"
+    },
+    {
+      "from_host": "codex",
+      "from_event": "PreToolUse",
+      "to_host": "claude-code",
+      "to_events": ["PreToolUse"],
+      "from_shape": "nested",
+      "to_shape": "nested",
+      "matcher": "group-level",
+      "stdin_example": "json-on-stdin",
+      "decision_stdio": true,
+      "stdout_example": "claude-code:{hookSpecificOutput.hookEventName,hookSpecificOutput.permissionDecision,updatedInput}",
+      "source": "https://developers.openai.com/codex/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterAgentThought",
+      "to_host": "claude-code",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeTabFileRead",
+      "to_host": "claude-code",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterTabFileEdit",
+      "to_host": "claude-code",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "workspaceOpen",
+      "to_host": "claude-code",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeShellExecution",
+      "to_host": "claude-code",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterAgentThought",
+      "to_host": "codex",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeTabFileRead",
+      "to_host": "codex",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "afterTabFileEdit",
+      "to_host": "codex",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "workspaceOpen",
+      "to_host": "codex",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "from_host": "cursor",
+      "from_event": "beforeShellExecution",
+      "to_host": "codex",
+      "no-equivalent": true,
+      "source": "https://prod.cursor.com/docs/hooks"
+    }
+  ]
+}

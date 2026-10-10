@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/agentc-protocol/v1.json",
+  "title": "agentc-protocol/v1",
+  "description": "Machine-readable envelope for agentc --format protocol. Python validate_envelope is authoritative.",
+  "type": "object",
+  "required": [
+    "protocolVersion",
+    "status",
+    "summary",
+    "diagnostics",
+    "artifacts",
+    "confirmation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "protocolVersion": { "const": "agentc-protocol/v1" },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "unconfirmed", "error"]
+    },
+    "summary": { "type": "string" },
+    "diagnostics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diagnostic" }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "confirmation": {
+      "type": "object",
+      "required": ["required", "flag"],
+      "additionalProperties": false,
+      "properties": {
+        "required": { "type": "boolean" },
+        "flag": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "diagnostic": {
+      "type": "object",
+      "required": ["code", "level", "message", "path", "hint"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string" },
+        "level": { "type": "string" },
+        "message": { "type": "string" },
+        "path": { "type": ["string", "null"] },
+        "hint": { "type": "string" }
+      }
+    }
+  }
+}

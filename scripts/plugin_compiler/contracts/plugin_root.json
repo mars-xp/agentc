@@ -1,0 +1,22 @@
+{
+  "placeholders": [
+    {
+      "token": "${CLAUDE_PLUGIN_ROOT}",
+      "shell_var": "$CLAUDE_PLUGIN_ROOT",
+      "hosts": ["claude-code"],
+      "source": "https://code.claude.com/docs/en/plugins-reference"
+    },
+    {
+      "token": "${CURSOR_PLUGIN_ROOT}",
+      "shell_var": "$CURSOR_PLUGIN_ROOT",
+      "hosts": ["cursor"],
+      "source": "https://prod.cursor.com/docs/hooks"
+    },
+    {
+      "token": "${PLUGIN_ROOT}",
+      "shell_var": "$PLUGIN_ROOT",
+      "hosts": ["codex"],
+      "source": "https://prod.cursor.com/docs/reference/plugins"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Layout-red fixture for example-plugin-skill repair tests",
+  "interface": {
+    "displayName": "Authoring Layout Red",
+    "shortDescription": "Fixture with layout needle",
+    "longDescription": "Skill body intentionally contains a Cursor install path needle.",
+    "developerName": "fixture",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "defaultPrompt": ["Repair layout needle fixture."]
+  }
+}

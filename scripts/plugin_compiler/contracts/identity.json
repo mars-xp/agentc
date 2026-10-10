@@ -1,0 +1,12 @@
+{
+  "source_requires_semver": {
+    "cursor": false,
+    "claude-code": false,
+    "codex": true
+  },
+  "target_requires_semver": {
+    "cursor": false,
+    "claude-code": false,
+    "codex": true
+  }
+}
