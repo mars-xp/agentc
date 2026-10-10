@@ -16,10 +16,12 @@ from agentc.model.diagnostics import (
     CODE_INSTALL_NO_BACKUP,
     CODE_INSTALL_NO_LEDGER,
     CODE_INSTALL_ROOT_REQUIRED,
+    CODE_INSTALL_REGISTERED,
     CODE_INSTALL_TXN_INCOMPLETE,
     CODE_INSTALL_TXN_ROLLED_BACK,
     CODE_INSTALL_UNCONFIRMED,
     CODE_INSTALL_UNREADABLE,
+    CODE_INSTALL_UNREGISTERED,
     Diagnostic,
 )
 
@@ -886,7 +888,15 @@ def _status_entry(
     dest = Path(payload["dest"])
     files = payload.get("files") or {}
     drift = drifted_files(dest, files)
-    diagnostics: list[Diagnostic] = []
+    diagnostics: list[Diagnostic] = [
+        Diagnostic(
+            code=CODE_INSTALL_REGISTERED,
+            level="notice",
+            message="registered",
+            path=dest.as_posix(),
+            hint="",
+        )
+    ]
     if drift:
         diagnostics.append(
             Diagnostic(
@@ -916,7 +926,7 @@ def _status_backup_only_entry(
     dest = Path(payload["dest"])
     diagnostics = [
         Diagnostic(
-            code="",
+            code=CODE_INSTALL_UNREGISTERED,
             level="notice",
             message="unregistered",
             path=None,
@@ -986,7 +996,7 @@ def status_installs(
         return (
             [
                 Diagnostic(
-                    code="",
+                    code=CODE_INSTALL_UNREGISTERED,
                     level="notice",
                     message="unregistered",
                     path=None,

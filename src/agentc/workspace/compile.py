@@ -75,10 +75,10 @@ _SCRIPT_SUFFIXES = {
     ".rb",
     ".pl",
 }
-_PATH_TOKEN = re.compile(
-    r"(?<![A-Za-z0-9_./-])(?:\./)?(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]+"
-)
 _SAFE_NAME = re.compile(r"[A-Za-z0-9._-]+")
+_SOURCE_OUTPUT_ROOTS = frozenset(
+    {"build", "dist", ".pytest_cache", "__pycache__"}
+)
 
 
 @dataclass(frozen=True)
@@ -177,6 +177,10 @@ def compile_workspace(
         )
     try:
         parsed = _load_parsed(plugin_dir, kind)
+        if parsed.override_config is None:
+            from plugin_compiler.overrides import load_override_config
+
+            parsed = replace(parsed, override_config=load_override_config(plugin_dir))
     except Exception as exc:
         return _result(
             False,
@@ -187,7 +191,10 @@ def compile_workspace(
             inventory.exclusions,
         )
     outcomes = _classify(plugin_dir, inventory, parsed, requested)
-    parsed = _with_bundled_resources(parsed, outcomes, requested)
+    parsed = replace(
+        _with_bundled_resources(parsed, outcomes, requested),
+        workspace_full_source=True,
+    )
     failed = any(item.status == "error" for item in outcomes)
     diagnostics = list(_outcome_diagnostics(outcomes))
     diagnostics.extend(_block_diagnostics(parsed.source_issues, kind))
@@ -498,13 +505,6 @@ def _classify(
 ) -> tuple[FileOutcome, ...]:
     documents = _index_documents(parsed)
     skill_dirs = _skill_dir_map(parsed)
-    file_set = {
-        entry.path for entry in inventory.entries if entry.kind == "file"
-    }
-    named = {
-        target: _named_paths(plugin_dir, parsed, documents, target, file_set)
-        for target in targets
-    }
     file_outcomes: list[FileOutcome] = []
     other_entries: list[InventoryEntry] = []
     for entry in inventory.entries:
@@ -514,7 +514,7 @@ def _classify(
         for target in targets:
             file_outcomes.append(
                 _file_outcome(
-                    plugin_dir, entry.path, target, documents, named[target]
+                    plugin_dir, entry.path, target, documents, parsed
                 )
             )
     outcomes = list(file_outcomes)
@@ -583,84 +583,49 @@ def _skill_output_dir(document) -> str:
     return "skills/{0}".format(document.name)
 
 
-def _named_paths(
-    plugin_dir: Path,
-    parsed,
-    documents: dict[str, tuple[str, object]],
-    target: str,
-    file_set: set[str],
-) -> set[str]:
-    named = _manifest_file_names(parsed, file_set)
-    for path, (capability, document) in documents.items():
-        decision = _document_decision(plugin_dir, path, capability, document, target)
-        if decision.status != "transformed":
-            continue
-        source = plugin_dir.joinpath(*path.split("/"))
-        parent = path.rsplit("/", 1)[0] if "/" in path else ""
-        named.update(_paths_in_file(source, file_set, parent))
-    return named
-
-
-def _manifest_file_names(parsed, file_set: set[str]) -> set[str]:
-    named: set[str] = set()
-    for value in _walk_strings(parsed.source_extension.fields):
-        relative = _normalize_rel(value)
-        if relative is not None and relative in file_set:
-            named.add(relative)
-    return named
-
-
-def _walk_strings(value: object):
-    if isinstance(value, str):
-        yield value
-        return
-    if isinstance(value, dict):
-        for item in value.values():
-            yield from _walk_strings(item)
-        return
-    if isinstance(value, list):
-        for item in value:
-            yield from _walk_strings(item)
-
-
-def _paths_in_file(path: Path, file_set: set[str], parent: str) -> set[str]:
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return set()
-    found: set[str] = set()
-    for match in _PATH_TOKEN.finditer(text):
-        relative = _normalize_rel(match.group(0))
-        if relative is None:
-            continue
-        if relative in file_set:
-            found.add(relative)
-        if parent:
-            joined = "{0}/{1}".format(parent, relative)
-            if joined in file_set:
-                found.add(joined)
-    return found
-
-
-def _normalize_rel(value: str) -> str | None:
-    text = value.strip().replace("\\", "/")
-    if not text or "://" in text:
-        return None
-    while text.startswith("./"):
-        text = text[2:]
-    text = text.strip("/")
-    if not text or text.startswith("/") or ".." in text.split("/"):
-        return None
-    return text
-
-
 def _file_outcome(
     plugin_dir: Path,
     path: str,
     target: str,
     documents: dict[str, tuple[str, object]],
-    named: set[str],
+    parsed,
 ) -> FileOutcome:
+    from plugin_compiler.policy import is_blocked_sensitive_path
+
+    if is_blocked_sensitive_path(plugin_dir.joinpath(*path.split("/"))):
+        return FileOutcome(
+            path=path,
+            target=target,
+            status="protected",
+            reason="local or credential-like file is not published",
+        )
+    parts = path.split("/")
+    if (
+        len(parts) >= 3
+        and parts[0] == "skills"
+        and parsed.override_config is not None
+    ):
+        from plugin_compiler.overrides import skill_dir_allowed
+
+        if not skill_dir_allowed(parsed.override_config, parts[1], target):
+            return FileOutcome(
+                path=path,
+                target=target,
+                status="excluded",
+                capability="skill",
+                reason="target excluded by packaging/platform-overrides.json",
+            )
+    ignored = _source_only_reason(path)
+    if ignored:
+        return FileOutcome(path=path, target=target, status="ignored", reason=ignored)
+    if path.startswith("packaging/"):
+        return FileOutcome(
+            path=path,
+            target=target,
+            status="consumed",
+            capability="build-config",
+            reason="used by the compiler; hosts do not accept packaging configuration",
+        )
     if path in _MANIFEST_FILES:
         return FileOutcome(
             path=path,
@@ -672,28 +637,82 @@ def _file_outcome(
     indexed = documents.get(path)
     if indexed is not None:
         capability, document = indexed
-        return _document_decision(plugin_dir, path, capability, document, target)
-    if path in named:
-        return FileOutcome(
-            path=path,
-            target=target,
-            status="bundled",
-            target_path=path,
-            capability=_rejected_capability(plugin_dir, path),
+        return _document_decision(
+            plugin_dir, path, capability, document, target, parsed
         )
     capability = _rejected_capability(plugin_dir, path)
     return FileOutcome(
         path=path,
         target=target,
-        status="error",
+        status="bundled",
+        target_path=path,
         capability=capability,
-        reason=_rejected_reason(capability, target),
     )
 
 
+def _source_only_reason(path: str) -> str | None:
+    parts = path.split("/")
+    if parts[0] in _SOURCE_OUTPUT_ROOTS or any(
+        part in {"__pycache__", ".pytest_cache"} for part in parts
+    ):
+        return "existing build or cache output; excluded from the plugin archive"
+    return None
+
+
 def _document_decision(
-    plugin_dir: Path, path: str, capability: str, document, target: str
+    plugin_dir: Path, path: str, capability: str, document, target: str, parsed
 ) -> FileOutcome:
+    if parsed.override_config is not None:
+        from plugin_compiler.model import Target
+        from plugin_compiler.overrides import command_binding_for, resolved_targets
+
+        capability_id = getattr(document, "capability_id", None)
+        ref = next(
+            (
+                item
+                for item in parsed.capabilities
+                if item.capability_id == capability_id
+            ),
+            None,
+        )
+        if ref is not None and Target(target) not in resolved_targets(
+            parsed.override_config, ref
+        ):
+            return FileOutcome(
+                path=path,
+                target=target,
+                status="excluded",
+                capability=capability,
+                reason="target excluded by packaging/platform-overrides.json",
+            )
+        if capability == "command" and target == "codex":
+            binding = command_binding_for(parsed.override_config, document.capability_id)
+            if binding is not None:
+                return FileOutcome(
+                    path=path,
+                    target=target,
+                    status="bound",
+                    target_path="skills/{0}/SKILL.md".format(
+                        binding.codex_skill_dir
+                    ),
+                    capability=capability,
+                    reason="command uses the configured Codex skill",
+                )
+    if capability == "skill" and parsed.override_config is not None:
+        from plugin_compiler.overrides import skill_dir_allowed
+
+        if not skill_dir_allowed(
+            parsed.override_config,
+            _skill_output_dir(document).split("/")[-1],
+            target,
+        ):
+            return FileOutcome(
+                path=path,
+                target=target,
+                status="excluded",
+                capability=capability,
+                reason="target excluded by packaging/platform-overrides.json",
+            )
     accepted, target_path, reason = _document_acceptance(
         plugin_dir, path, capability, document, target
     )
@@ -737,6 +756,8 @@ def _document_acceptance(
         issue = rule_conversion_issue(document, host)
         if issue is not None:
             return False, None, _public_message(issue.message)
+        if target != "cursor":
+            return True, "compiled-rules/bodies/{0}.txt".format(path), None
         return True, cursor_rule_output_path(document), None
     if capability == "command":
         return _command_acceptance(document, path, target)
@@ -881,6 +902,29 @@ def _other_outcome(
             status="error",
             capability="directory",
             reason=_rejected_reason("directory", target),
+        )
+    if any(item.status == "consumed" for item in under):
+        return FileOutcome(path=entry.path, target=target, status="consumed")
+    if any(item.status == "ignored" for item in under):
+        return FileOutcome(
+            path=entry.path,
+            target=target,
+            status="ignored",
+            reason="existing build or cache output",
+        )
+    if any(item.status == "protected" for item in under):
+        return FileOutcome(
+            path=entry.path,
+            target=target,
+            status="protected",
+            reason="local or credential-like file is not published",
+        )
+    if any(item.status == "excluded" for item in under):
+        return FileOutcome(
+            path=entry.path,
+            target=target,
+            status="excluded",
+            reason="target excluded by source configuration",
         )
     return FileOutcome(path=entry.path, target=target, status="empty")
 

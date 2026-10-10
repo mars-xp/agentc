@@ -51,6 +51,7 @@ agentc workspace build ./my-plugin --targets cursor,codex,claude-code --format p
 Read the protocol envelope and `workspace-build-report.json`. Do not parse the text summary as the result.
 
 The only fixed exclusion is the `.git/` directory at the source root.
+Every other path is inventoried and reported for each target. Ordinary files, including scripts and assets, are bundled. `packaging/` is consumed as compiler configuration; previous `build/`, `dist/`, and cache files are reported as `ignored`. Local `.local` configuration is `protected`, and content explicitly disabled for a target is `excluded`.
 
 ### Install into a directory you name
 
@@ -60,13 +61,13 @@ When the build succeeds and you asked to install into a directory you named, que
 agentc status --kind codex --name NAME --root /chosen/codex/root --format protocol
 ```
 
-If that status says unregistered, install this round's zip:
+If the protocol diagnostics include `AGC-P5-0020` (unregistered), install this round's zip:
 
 ```bash
 agentc install codex --from /path/to/codex.zip --root /chosen/codex/root --yes --format protocol
 ```
 
-If that status says registered and it does not report drift code AGC-P5-0008, update with sync:
+If the protocol diagnostics include `AGC-P5-0019` (registered) and do not include drift code `AGC-P5-0008`, update with sync:
 
 ```bash
 agentc sync codex --from /path/to/codex.zip --root /chosen/codex/root --yes --format protocol

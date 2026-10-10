@@ -13,6 +13,7 @@ from plugin_compiler.zip_tree import extract_zip_filtered
 
 from agentc.model.diagnostics import (
     CODE_INSTALL_ROOT_REQUIRED,
+    CODE_INSTALL_STALE,
     CODE_INSTALL_UNREADABLE,
     CODE_NOT_CURSOR_ZIP,
     Diagnostic,
@@ -103,6 +104,32 @@ def _compare_trees(source: Path, dest: Path) -> tuple[tuple[str, ...], tuple[str
     return (tuple(create), tuple(identical), tuple(conflicts))
 
 
+def _stale_workspace_archive(zip_path: Path) -> bool:
+    """Reject an archive only when its owning workspace marker marks it stale."""
+    from agentc.workspace.report import MARKER_NAME
+
+    archive = zip_path.resolve()
+    for output in (archive.parent, *archive.parents[1:3]):
+        marker_path = output / MARKER_NAME
+        if not marker_path.is_file():
+            continue
+        try:
+            marker = json.loads(marker_path.read_text(encoding="utf-8"))
+            relative = archive.relative_to(output).as_posix()
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError):
+            continue
+        if not isinstance(marker, dict) or not isinstance(marker.get("managed"), list):
+            continue
+        return any(
+            isinstance(item, dict)
+            and item.get("role") == "archive"
+            and item.get("path") == relative
+            and item.get("stale") is True
+            for item in marker["managed"]
+        )
+    return False
+
+
 def build_install_plan(
     zip_path: Path,
     install_root: Path | None,
@@ -110,6 +137,16 @@ def build_install_plan(
     staging: Path,
     host: str = "cursor",
 ) -> tuple[InstallPlan | None, list[Diagnostic]]:
+    if _stale_workspace_archive(zip_path):
+        return None, [
+            Diagnostic(
+                code=CODE_INSTALL_STALE,
+                level="error",
+                message="Archive belongs to a failed or superseded workspace build.",
+                path=zip_path.as_posix(),
+                hint="Run agentc workspace build again and use the ZIP in its current report.",
+            )
+        ]
     if host in ("codex", "claude-code") and install_root is None:
         return None, [
             Diagnostic(

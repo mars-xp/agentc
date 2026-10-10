@@ -511,8 +511,8 @@ def test_failed_round_zip_survives_next_success() -> None:
         first_zip = Path(first_report["archives"][0]["path"])
         first_name = first_zip.name
         first_bytes = first_zip.read_bytes()
-        stray = source / "stray.txt"
-        stray.write_text("not a plugin document\n", encoding="utf-8", newline="\n")
+        stray = source / "stray-link"
+        stray.symlink_to("skills/demo/SKILL.md")
         failed_code, failed_out, failed_err = _call_main(
             "workspace",
             "build",
@@ -530,6 +530,15 @@ def test_failed_round_zip_survives_next_success() -> None:
         live = output / first_name
         assert live.is_file()
         assert live.read_bytes() == first_bytes
+        rejected_code, rejected_out, rejected_err = _call_main(
+            "install", "cursor", "--from", str(live),
+            "--root", str(base / "installed"), "--yes", "--format", "protocol",
+        )
+        assert rejected_code != 0, rejected_out + rejected_err
+        assert any(
+            item["code"] == "AGC-P5-0018"
+            for item in _parse_protocol(rejected_out)["diagnostics"]
+        )
         stray.unlink()
         skill = source / "skills" / "demo" / "SKILL.md"
         skill.write_text(
@@ -928,6 +937,15 @@ def test_install_status_restore_keeps_unmanaged_files() -> None:
         home.mkdir()
         source = base / "plugin"
         output = base / "out"
+        absent_code, absent_out, absent_err = _call_main(
+            "status", "--kind", "cursor", "--name", "demo",
+            "--root", str(base / "empty-install"), "--format", "protocol",
+        )
+        assert absent_code == 0, absent_out + absent_err
+        assert any(
+            item["code"] == "AGC-P5-0020"
+            for item in _parse_protocol(absent_out)["diagnostics"]
+        )
         _write_clean_cursor(source, body=VISIBLE_SENTENCE + "\n")
         env = os.environ.copy()
         env["HOME"] = str(home)
@@ -1019,6 +1037,15 @@ def test_install_status_restore_keeps_unmanaged_files() -> None:
             assert status.returncode == 0, status.stdout + status.stderr
             assert "plugin: {0}".format(name) in status.stdout
             assert "state: registered" in status.stdout
+            state_code, state_out, state_err = _call_main(
+                "status", "--kind", host, "--name", name,
+                "--root", str(host_root), "--format", "protocol",
+            )
+            assert state_code == 0, state_out + state_err
+            assert any(
+                item["code"] == "AGC-P5-0019"
+                for item in _parse_protocol(state_out)["diagnostics"]
+            )
             removed = subprocess.run(
                 [
                     sys.executable,

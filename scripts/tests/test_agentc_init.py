@@ -52,14 +52,13 @@ def test_init_writes_schema_and_github_ci():
         assert "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in body
         assert "actions/checkout@v" not in body
         assert "actions/setup-python@v" not in body
-        assert "no public install source" in body
+        assert 'python -m pip install "git+https://github.com/mars-xp/agentc.git@main"' in body
         assert (dest / "overlays" / "cursor").is_dir()
         gitignore = (dest / ".gitignore").read_text(encoding="utf-8")
         assert "build/" in gitignore.splitlines()
         readme = (dest / "README.md").read_text(encoding="utf-8")
         assert "example GitHub Actions workflow" in readme
-        assert "no public install source" in readme
-        assert "will not go green" in readme
+        assert "installs AgentC from the public GitHub source" in readme
         license_text = (dest / "LICENSE").read_text(encoding="utf-8")
         assert "TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION" in license_text
         assert "9. Accepting Warranty or Additional Liability." in license_text

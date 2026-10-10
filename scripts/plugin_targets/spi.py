@@ -75,6 +75,7 @@ class ParsedPlugin:
     target_overlays: tuple[TargetOverlay, ...] = ()
     declared_resources: tuple[DeclaredResource, ...] = ()
     source_issues: tuple[CompilerIssue, ...] = ()
+    workspace_full_source: bool = False
 
 
 @dataclass

@@ -31,6 +31,8 @@ agentc workspace build ./my-plugin --targets cursor,codex,claude-code --format p
 
 `./my-plugin` 是插件源码目录，不是应用仓库的根目录。`--targets` 指定目标宿主；只需要 Cursor 时可写成 `--targets cursor`。命令会返回机器可读的协议结果，并生成 `workspace-build-report.json`。请以协议结果、报告中的诊断和产物路径为准，不要靠解析文本摘要判断成功与否。
 
+AgentC 会盘点目录中的每个文件，并在报告中列出每个目标的去向。普通资源和脚本会进入 ZIP；`packaging/` 是编译配置，标记为 `consumed`；已有的 `build/`、`dist/` 和缓存标记为 `ignored`；本机 `.local` 配置标记为 `protected`；配置中明确限制宿主的内容标记为 `excluded`。这些状态不会悄悄丢掉文件。不要把本机配置放进公开发布的源码仓库。
+
 如果编译失败，报告会指出原目录中的路径。本次失败不会产生可安装的新 ZIP；修改原文件后，再运行同一条命令。
 
 ### 3. 安装或更新到指定目录
@@ -41,7 +43,7 @@ agentc workspace build ./my-plugin --targets cursor,codex,claude-code --format p
 agentc status --kind codex --name NAME --root /chosen/codex/root --format protocol
 ```
 
-未注册时安装；已注册且没有 `AGC-P5-0008` 文件漂移时，使用 `sync` 更新：
+协议诊断 `AGC-P5-0020` 表示未注册，此时安装；`AGC-P5-0019` 表示已注册，且没有 `AGC-P5-0008` 文件漂移时，使用 `sync` 更新：
 
 ```bash
 agentc install codex --from /path/to/codex.zip --root /chosen/codex/root --yes --format protocol

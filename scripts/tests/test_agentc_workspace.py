@@ -868,7 +868,7 @@ def test_clean_cursor_plugin_builds_three_targets() -> None:
                     assert outcome.target_path
 
 
-def test_unknown_files_fail_without_zips() -> None:
+def test_workspace_bundles_all_regular_source_files() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
         root = base / "plugin"
@@ -886,24 +886,74 @@ def test_unknown_files_fail_without_zips() -> None:
             encoding="utf-8",
             newline="\n",
         )
+        (root / ".gitignore").write_text("build/\n", encoding="utf-8")
+        (root / "build").mkdir()
+        (root / "build" / "previous.zip").write_bytes(BLOB)
         before = _signature(root)
         result = _compile(root, output)
         assert _signature(root) == before
         assert not (script.parent / "ran.txt").exists()
-        assert not result.ok
-        assert result.zips == ()
-        assert list(output.rglob("*.zip")) == []
+        assert result.ok
+        assert len(result.zips) == 3
         for rel in (
             "notes/unknown.txt",
             "resources/blob.bin",
             "scripts/helper.py",
+            ".gitignore",
         ):
             for target in TARGETS:
                 outcome = _outcome(result, rel, target)
-                assert outcome.status == "error"
-                assert outcome.path == rel
-                assert outcome.capability
-                assert outcome.reason
+                assert outcome.status == "bundled"
+                assert outcome.target_path == rel
+            for zip_path in result.zips:
+                assert any(name.endswith("/" + rel) for name in _zip_names(Path(zip_path)))
+        for target in TARGETS:
+            assert _outcome(result, "build/previous.zip", target).status == "ignored"
+        for zip_path in result.zips:
+            assert not any(name.endswith("/build/previous.zip") for name in _zip_names(Path(zip_path)))
+
+
+def test_workspace_reports_compiler_inputs_and_target_limits() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        root = base / "plugin"
+        _write_clean_cursor(root)
+        _write_skill(root / "skills" / "localonly")
+        packaging = root / "packaging"
+        packaging.mkdir()
+        (packaging / "platform-overrides.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "default_targets": list(TARGETS),
+                    "overrides": {
+                        "skill:skills/localonly": {
+                            "targets": ["cursor"],
+                            "reason": "Cursor only",
+                        }
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        private_file = root / "skills" / "demo" / "config" / "access.local"
+        private_file.parent.mkdir()
+        private_file.write_text("local configuration\n", encoding="utf-8")
+        result = _compile(root, base / "out")
+        assert result.ok, result.diagnostics
+        for target in TARGETS:
+            assert _outcome(
+                result, "packaging/platform-overrides.json", target
+            ).status == "consumed"
+            assert _outcome(
+                result, "skills/demo/config/access.local", target
+            ).status == "protected"
+        assert _outcome(result, "skills/localonly/SKILL.md", "cursor").status == "transformed"
+        for target in ("codex", "claude-code"):
+            assert _outcome(result, "skills/localonly/SKILL.md", target).status == "excluded"
+        for zip_path in result.zips:
+            names = _zip_names(Path(zip_path))
+            assert not any("packaging/" in name or name.endswith("access.local") for name in names)
 
 
 def test_named_helper_script_is_bundled() -> None:
@@ -1170,7 +1220,8 @@ def main() -> int:
         test_six_sources_report_paths_match_zip,
         test_placeholder_secret_stays_in_body_text_and_not_in_paths,
         test_clean_cursor_plugin_builds_three_targets,
-        test_unknown_files_fail_without_zips,
+        test_workspace_bundles_all_regular_source_files,
+        test_workspace_reports_compiler_inputs_and_target_limits,
         test_named_helper_script_is_bundled,
         test_empty_directory_stays_out_of_zip,
         test_secret_fails_without_leaking_into_zip_or_report,

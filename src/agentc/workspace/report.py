@@ -75,6 +75,8 @@ def build_report(
                     "target": target,
                     "status": item.status,
                     "targetPath": item.target_path,
+                    "capability": item.capability,
+                    "reason": scrub_secret_text(item.reason) if item.reason else None,
                 }
             )
         rows.append(

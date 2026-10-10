@@ -298,11 +298,34 @@ def iter_parsed_stage_files(
             if path in seen_files:
                 continue
             posix = _posix_plugin_relative(str(path.relative_to(plugin_dir)))
+            full_source = getattr(parsed, "workspace_full_source", False)
+            if full_source and posix in {
+                ".cursor-plugin/plugin.json",
+                ".codex-plugin/plugin.json",
+                ".claude-plugin/plugin.json",
+            }:
+                continue
+            if full_source and posix.startswith("packaging/"):
+                continue
+            if full_source:
+                if is_blocked_sensitive_path(path):
+                    continue
+                parts = posix.split("/")
+                if parts[0] in {
+                    "build", "dist", ".pytest_cache", "__pycache__"
+                } or any(part in {"__pycache__", ".pytest_cache"} for part in parts):
+                    continue
+                if (
+                    parts[0] == "skills"
+                    and len(parts) >= 2
+                    and should_skip(path, plugin_dir, config)
+                ):
+                    continue
             if posix in replaced_docs:
                 continue
             if _has_symlink_component(path, plugin_dir):
                 continue
-            if should_skip(path, plugin_dir, config):
+            if not full_source and should_skip(path, plugin_dir, config):
                 continue
             seen_files.add(path)
             collected.append(path)

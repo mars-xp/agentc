@@ -35,8 +35,8 @@ _CI_TEMPLATE = (
 _README_CI = (
     "This project includes an example GitHub Actions workflow at "
     "`.github/workflows/ci.yml`.\n"
-    "Install `agentc` yourself first. There is no public install source yet, "
-    "so Actions will not go green on public GitHub by default.\n"
+    "The workflow installs AgentC from the public GitHub source before validation "
+    "and build.\n"
 )
 
 _APACHE_2_LICENSE_PATH = Path(__file__).resolve().parent / "templates" / "LICENSE-2.0.txt"
